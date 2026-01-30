@@ -215,6 +215,88 @@ body::before {
   margin-left: 0.25rem;
 }
 
+/* 오늘 출석 체크 (홈) */
+.home-attendance-empty {
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.home-attendance-empty p {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.home-attendance-empty .btn {
+  margin: 0 0.35rem;
+}
+
+.home-attendance-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.home-attendance-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--accent);
+}
+
+.home-attendance-date {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 7rem;
+}
+
+.home-attendance-study {
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  min-width: 6rem;
+}
+
+.home-attendance-time {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.home-attendance-done {
+  font-size: 0.85rem;
+  color: var(--success);
+  font-weight: 500;
+}
+
+.btn-attendance {
+  padding: 0.5rem 1rem;
+  background: var(--success-soft);
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  color: var(--success);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.btn-attendance:hover {
+  background: var(--success);
+  color: var(--bg-deep);
+  box-shadow: 0 0 0 2px var(--success-glow);
+}
+
 /* 텍스트 가독성: 카드/패널 내 본문은 항상 밝은 색 */
 .panel h2,
 .panel h3,

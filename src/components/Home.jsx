@@ -1,7 +1,17 @@
 import { useMemo } from 'react';
+import { STUDIES } from '../data/constants';
+import { formatDate } from '../utils/format';
 import { getAttendanceRate, getAttendedCount, getThisMonthAttendedCount } from '../utils/attendance';
 
-function Home({ currentMember, onCurrentMemberChange, members, schedules, onOpenMemberSession }) {
+function Home({
+  currentMember,
+  onCurrentMemberChange,
+  members,
+  schedules,
+  onOpenMemberSession,
+  onAttendanceClick,
+  onOpenSchedule,
+}) {
   const statsByMember = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
     return members.map((name) => {
@@ -26,6 +36,16 @@ function Home({ currentMember, onCurrentMemberChange, members, schedules, onOpen
     );
     return { sessionsWithAttendance, thisMonthTotal };
   }, [members, schedules]);
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const yesterdayStr = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  const todaySessions = useMemo(
+    () =>
+      schedules
+        .filter((s) => s.date === todayStr || s.date === yesterdayStr)
+        .sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || ''))),
+    [schedules, todayStr, yesterdayStr]
+  );
 
   return (
     <main className="home home--first">
@@ -54,6 +74,53 @@ function Home({ currentMember, onCurrentMemberChange, members, schedules, onOpen
             </button>
           )}
         </div>
+      </section>
+
+      <section className="home-section">
+        <h2 className="section-label">오늘 출석 체크</h2>
+        <p className="home-hint">참석한 세션을 선택해 출석을 체크하세요.</p>
+        {todaySessions.length === 0 ? (
+          <div className="home-attendance-empty">
+            <p>오늘·어제 일정이 없어요.</p>
+            <button type="button" className="btn btn-primary" onClick={onOpenSchedule}>
+              일정 추가하기
+            </button>
+            <button type="button" className="btn btn-ghost" onClick={onOpenSchedule}>
+              전체 일정 보기
+            </button>
+          </div>
+        ) : (
+          <ul className="home-attendance-list">
+            {todaySessions.map((item) => {
+              const study = STUDIES.find((s) => s.id === item.studyId);
+              const studyName = study ? study.name : item.studyId;
+              const isToday = item.date === todayStr;
+              return (
+                <li key={item.id} className="home-attendance-item">
+                  <span className="home-attendance-date">
+                    {formatDate(item.date)}
+                    {isToday ? ' · 오늘' : ' · 어제'}
+                  </span>
+                  <span className="home-attendance-study">{studyName}</span>
+                  <span className="home-attendance-time">{item.time || ''}</span>
+                  {item.attendance && item.attendance.length > 0 && (
+                    <span className="home-attendance-done">
+                      출석 {item.attendance.length}명
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    className="btn btn-attendance"
+                    onClick={() => onAttendanceClick?.(item)}
+                    aria-label="출석 체크"
+                  >
+                    출석 체크
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
 
       <section className="home-section">

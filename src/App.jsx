@@ -85,6 +85,8 @@ function App() {
           members={MEMBERS}
           schedules={schedules}
           onOpenMemberSession={openMemberSession}
+          onAttendanceClick={(item) => setAttendanceItem(item)}
+          onOpenSchedule={openSchedule}
         />
       )}
 
