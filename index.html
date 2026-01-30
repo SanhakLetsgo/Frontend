@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스터디 허브 | 우리 팀 스터디 관리</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">
+          <span class="logo-icon">◆</span>
+          스터디 허브
+        </h1>
+        <p class="tagline">논문 · 운동 · 독서 · 연구, 한곳에서</p>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="members-bar">
+        <h2 class="section-label">팀원</h2>
+        <div class="members-list" id="membersList"></div>
+      </section>
+
+      <section class="studies-section">
+        <h2 class="section-label">스터디 & 활동</h2>
+        <div class="studies-grid" id="studiesGrid"></div>
+      </section>
+
+      <section class="schedule-section">
+        <h2 class="section-label">다가오는 일정</h2>
+        <div class="schedule-list" id="scheduleList"></div>
+        <button type="button" class="btn-add-schedule" id="addScheduleBtn">+ 일정 추가</button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>스터디 허브 · 창민석 · 이윤지 · 송수현 · 강태영 · 조수민 · 신현호</p>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">일정 추가</h3>
+        <button type="button" class="modal-close" id="modalClose" aria-label="닫기">×</button>
+      </div>
+      <form class="modal-form" id="scheduleForm">
+        <label>
+          <span>스터디/활동</span>
+          <select name="studyId" required></select>
+        </label>
+        <label>
+          <span>날짜</span>
+          <input type="date" name="date" required>
+        </label>
+        <label>
+          <span>시간</span>
+          <input type="time" name="time" value="19:00">
+        </label>
+        <label>
+          <span>장소/비고</span>
+          <input type="text" name="note" placeholder="예: 스타벅스, 줌 링크 등">
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="modalCancel">취소</button>
+          <button type="submit" class="btn btn-primary">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
