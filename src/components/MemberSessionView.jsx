@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { STUDIES, EXERCISE_TYPES } from '../data/constants';
 import { formatDate } from '../utils/format';
+import { getAttendanceRate, getThisMonthAttendedCount, getAttendedCount } from '../utils/attendance';
 import ScheduleForm from './ScheduleForm';
 
 function MemberSessionView({
@@ -28,6 +29,12 @@ function MemberSessionView({
     (s) => s.attendance && s.attendance.includes(memberName)
   );
   const exerciseSessions = schedules.filter((s) => s.studyId === 'exercise');
+
+  const attendanceSummary = useMemo(() => ({
+    total: getAttendedCount(memberName, schedules),
+    thisMonth: getThisMonthAttendedCount(memberName, schedules),
+    rate: getAttendanceRate(memberName, schedules),
+  }), [memberName, schedules]);
 
   return (
     <section className="panel member-session">
@@ -110,9 +117,29 @@ function MemberSessionView({
 
       {tab === 'attendance' && (
         <div className="member-session-content">
+          <div className="attendance-summary">
+            <div className="attendance-summary__item">
+              <span className="attendance-summary__label">전체 출석</span>
+              <span className="attendance-summary__value">{attendanceSummary.total}회</span>
+            </div>
+            <div className="attendance-summary__item">
+              <span className="attendance-summary__label">이번 달</span>
+              <span className="attendance-summary__value attendance-summary__value--accent">
+                {attendanceSummary.thisMonth}회
+              </span>
+            </div>
+            {attendanceSummary.rate != null && (
+              <div className="attendance-summary__item">
+                <span className="attendance-summary__label">출석률</span>
+                <span className="attendance-summary__value attendance-summary__value--rate">
+                  {attendanceSummary.rate}%
+                </span>
+              </div>
+            )}
+          </div>
           <h3 className="subsection-label">내가 출석한 세션</h3>
           {attendedSessions.length === 0 ? (
-            <p className="empty-hint">아직 출석한 세션이 없어요.</p>
+            <p className="empty-hint">아직 출석한 세션이 없어요. 일정에 참여한 뒤 출석 체크를 해 주세요.</p>
           ) : (
             <ul className="attendance-list">
               {attendedSessions.map((item) => {
