@@ -3,6 +3,7 @@ import { STUDIES, EXERCISE_TYPES } from '../data/constants';
 import { formatDate } from '../utils/format';
 import { getAttendanceRate, getThisMonthAttendedCount, getAttendedCount } from '../utils/attendance';
 import ScheduleForm from './ScheduleForm';
+import AttendanceCalendar from './AttendanceCalendar';
 
 function MemberSessionView({
   memberName,
@@ -15,6 +16,7 @@ function MemberSessionView({
   updateExerciseDone,
   members,
   initialStudyTab,
+  dailyCheckIn,
 }) {
   const [tab, setTab] = useState(initialStudyTab ? 'studies' : 'schedule');
   const [studyTab, setStudyTab] = useState(initialStudyTab || null);
@@ -117,6 +119,32 @@ function MemberSessionView({
 
       {tab === 'attendance' && (
         <div className="member-session-content">
+          <div className="daily-checkin-bar">
+            <span className="daily-checkin-label">오늘 출석</span>
+            {dailyCheckIn?.hasCheckedInToday(memberName) ? (
+              <span className="daily-checkin-done">오늘 출석 완료</span>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-daily-checkin"
+                onClick={() => dailyCheckIn?.addCheckIn(memberName)}
+                aria-label="오늘 출석하기"
+              >
+                출석하기
+              </button>
+            )}
+            <p className="daily-checkin-hint">하루에 한 번만 출석할 수 있어요.</p>
+          </div>
+          {dailyCheckIn && (
+            <div className="attendance-calendar-wrap">
+              <h3 className="subsection-label">출석 달력</h3>
+              <AttendanceCalendar
+                checkInDates={dailyCheckIn.getDatesForMember(memberName)}
+                year={new Date().getFullYear()}
+                month={new Date().getMonth()}
+              />
+            </div>
+          )}
           <div className="attendance-summary">
             <div className="attendance-summary__item">
               <span className="attendance-summary__label">전체 출석</span>

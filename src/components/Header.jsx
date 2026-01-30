@@ -16,7 +16,7 @@ function Header({ view, onGoHome, currentMember, onCurrentMemberChange, members 
             </a>
           )}
           {isHome && (
-            <p className="tagline">논문 · 운동 · 독서 · 연구, 한곳에서</p>
+            <p className="tagline">운동 · 논문 스터디</p>
           )}
         </div>
         <div className="member-picker">

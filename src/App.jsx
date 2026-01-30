@@ -1,23 +1,14 @@
 import { useState, useEffect } from 'react';
-import { MEMBERS, CURRENT_MEMBER_KEY, STUDIES } from './data/constants';
-import { useSchedules } from './hooks/useSchedules';
-import { formatDate } from './utils/format';
+import { MEMBERS, CURRENT_MEMBER_KEY } from './data/constants';
+import { useDailyCheckIns } from './hooks/useDailyCheckIns';
+import { useWorkoutLogs } from './hooks/useWorkoutLogs';
+import { usePapers } from './hooks/usePapers';
 import Header from './components/Header';
 import Home from './components/Home';
-import SchedulePanel from './components/SchedulePanel';
-import StudiesPanel from './components/StudiesPanel';
-import MembersPanel from './components/MembersPanel';
-import MemberSessionView from './components/MemberSessionView';
-import ScheduleForm from './components/ScheduleForm';
-import AttendanceModal from './components/AttendanceModal';
+import WorkoutView from './components/WorkoutView';
+import PaperStudyView from './components/PaperStudyView';
 
-const VIEWS = {
-  home: 'home',
-  schedule: 'schedule',
-  studies: 'studies',
-  members: 'members',
-  memberSession: 'memberSession',
-};
+const VIEWS = { home: 'home', workout: 'workout', paperStudy: 'paperStudy' };
 
 function App() {
   const [view, setView] = useState(VIEWS.home);
@@ -28,13 +19,10 @@ function App() {
       return '';
     }
   });
-  const [memberSessionTab, setMemberSessionTab] = useState(null);
-  const [scheduleFilter, setScheduleFilter] = useState('all');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [attendanceItem, setAttendanceItem] = useState(null);
 
-  const { schedules, add, remove, filteredByMember, updateAttendance, updateExerciseDone } =
-    useSchedules();
+  const dailyCheckIn = useDailyCheckIns();
+  const workoutLogs = useWorkoutLogs();
+  const papers = usePapers();
 
   useEffect(() => {
     try {
@@ -43,30 +31,9 @@ function App() {
     } catch {}
   }, [currentMember]);
 
-  const goHome = () => {
-    setView(VIEWS.home);
-    setMemberSessionTab(null);
-  };
-  const openSchedule = () => setView(VIEWS.schedule);
-  const openStudies = () => setView(VIEWS.studies);
-  const openMembers = () => setView(VIEWS.members);
-
-  const openMemberSession = (memberName, studyId = null) => {
-    setCurrentMember(memberName);
-    setMemberSessionTab(studyId);
-    setView(VIEWS.memberSession);
-  };
-
-  const openMemberSchedule = (memberName) => {
-    setCurrentMember(memberName);
-    setScheduleFilter('mine');
-    setView(VIEWS.schedule);
-  };
-
-  const displaySchedules =
-    scheduleFilter === 'mine' && currentMember
-      ? filteredByMember(currentMember)
-      : schedules;
+  const goHome = () => setView(VIEWS.home);
+  const openWorkout = () => setView(VIEWS.workout);
+  const openPaperStudy = () => setView(VIEWS.paperStudy);
 
   return (
     <div className="app">
@@ -83,76 +50,34 @@ function App() {
           currentMember={currentMember}
           onCurrentMemberChange={setCurrentMember}
           members={MEMBERS}
-          schedules={schedules}
-          onOpenMemberSession={openMemberSession}
-          onAttendanceClick={(item) => setAttendanceItem(item)}
-          onOpenSchedule={openSchedule}
+          onWorkout={openWorkout}
+          onPaperStudy={openPaperStudy}
         />
       )}
 
-      {view === VIEWS.memberSession && currentMember && (
-        <MemberSessionView
+      {view === VIEWS.workout && currentMember && (
+        <WorkoutView
           memberName={currentMember}
-          schedules={schedules}
           onGoHome={goHome}
-          onAddSchedule={(data) => add(data)}
-          onRemoveSchedule={remove}
-          onAttendanceClick={(item) => setAttendanceItem(item)}
-          updateAttendance={updateAttendance}
-          updateExerciseDone={updateExerciseDone}
-          members={MEMBERS}
-          initialStudyTab={memberSessionTab}
+          dailyCheckIn={dailyCheckIn}
+          workoutLogs={workoutLogs}
         />
       )}
 
-      {view === VIEWS.schedule && (
-        <SchedulePanel
-          schedules={displaySchedules}
-          scheduleFilter={scheduleFilter}
-          onFilterChange={setScheduleFilter}
-          currentMember={currentMember}
-          onAddClick={() => setModalOpen(true)}
-          onRemove={remove}
-          onAttendanceClick={(item) => setAttendanceItem(item)}
-          updateAttendance={updateAttendance}
+      {view === VIEWS.paperStudy && currentMember && (
+        <PaperStudyView
+          memberName={currentMember}
+          onGoHome={goHome}
+          papers={papers.papers}
+          addPaper={papers.addPaper}
+          addReview={papers.addReview}
+          getByReader={papers.getByReader}
         />
-      )}
-
-      {view === VIEWS.studies && <StudiesPanel />}
-      {view === VIEWS.members && (
-        <MembersPanel members={MEMBERS} onMemberClick={openMemberSchedule} />
       )}
 
       <footer className="footer">
-        <p>스터디 허브 · 창민석 · 이윤지 · 송수현 · 강태영 · 조수민 · 신현호</p>
+        <p>스터디 허브 · 운동 · 논문 스터디</p>
       </footer>
-
-      <ScheduleForm
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={(data) => {
-          add(data);
-          setModalOpen(false);
-        }}
-      />
-
-      {attendanceItem && (
-        <AttendanceModal
-          isOpen={!!attendanceItem}
-          onClose={() => setAttendanceItem(null)}
-          sessionLabel={
-            (STUDIES.find((s) => s.id === attendanceItem.studyId)?.name || attendanceItem.studyId) +
-            ' · ' +
-            formatDate(attendanceItem.date)
-          }
-          members={MEMBERS}
-          attendance={attendanceItem.attendance || []}
-          onSave={(attendance) => {
-            updateAttendance(attendanceItem.id, attendance);
-            setAttendanceItem(null);
-          }}
-        />
-      )}
     </div>
   );
 }

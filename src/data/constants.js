@@ -9,5 +9,6 @@ export const STUDIES = [
 
 export const STORAGE_KEY = 'study-hub-schedule';
 export const CURRENT_MEMBER_KEY = 'study-hub-current-member';
+export const DAILY_CHECKINS_KEY = 'study-hub-daily-checkins';
 
 export const EXERCISE_TYPES = ['러닝', '헬스', '스트레칭', '등산', '기타'];
